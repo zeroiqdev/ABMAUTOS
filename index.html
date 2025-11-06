@@ -12,17 +12,17 @@
     <div class="hero-container">
         <!-- Background Video -->
         <video class="background-video" autoplay muted loop playsinline preload="auto">
-            <source src="https://res.cloudinary.com/dyg7neetr/video/upload/v1756390811/4K_Cinematic___BMW_M4_Competition_zeuhr2.mp4" type="video/mp4">
+            <source src="https://res.cloudinary.com/dyg7neetr/video/upload/v1762437295/AMG_Video_ed7o7c.mp4" type="video/mp4">
         </video>
         
         <!-- Header -->
         <header class="header">
-            <div class="logo">ABM TEK</div>
+            <div class="logo"><img src="https://res.cloudinary.com/dyg7neetr/image/upload/v1759821531/Screenshot_2025-10-07_at_8.08.13_AM-removebg-preview_g8za2u.png" alt="ABM TEK" class="logo-img"></div>
             <div class="header-right">
-                <a href="tel:07003124444" class="phone-button">
-                    <i class="fas fa-phone"></i>
-                    07003124444
-                </a>
+                <button class="phone-button" id="bookAppointmentBtn">
+                    <i class="fas fa-calendar-check"></i>
+                    Book Appointment
+                </button>
                 <div class="menu-icon" id="menuToggle">
                     <span></span>
                     <span></span>
@@ -34,7 +34,7 @@
         <div class="nav-overlay" id="navOverlay">
             <div class="nav-overlay-content">
                 <div class="nav-overlay-header">
-                    <div class="nav-logo">ABM TEK</div>
+                    <div class="nav-logo"><img src="https://res.cloudinary.com/dyg7neetr/image/upload/v1759821531/Screenshot_2025-10-07_at_8.08.13_AM-removebg-preview_g8za2u.png" alt="ABM TEK" class="logo-img"></div>
                     <button class="nav-close" id="navClose">
                         <i class="fas fa-times"></i>
                     </button>
@@ -171,7 +171,7 @@
         </div>
     </section>
     
-    <!-- Service Banner Section -->
+    <!-- Service Banner Section 
     <section class="service-banner">
         <div class="service-banner-inner">
             <div class="service-banner-left">
@@ -181,9 +181,9 @@
                 <p>From classics to the latest models – we've got you covered.</p>
             </div>
         </div>
-    </section>
+    </section> -->
 
-    <!-- Testimonials -->
+    <!-- Testimonials 
     <section class="section testimonials" id="testimonials">
         <div class="container testimonials-inner">
             <div class="t-eyebrow">Testimonials</div>
@@ -216,6 +216,7 @@
             </div>
         </div>
     </section>
+    -->
 
     <!-- Contact Bar -->
     <section class="contact-bar">
@@ -223,20 +224,17 @@
             <h3>Get in touch</h3>
             <div class="contact-items">
                 <a href="tel:07003124444" class="contact-item"><i class="fas fa-phone"></i> 07003124444</a>
-                <a href="mailto:abmtek@gmail.com" class="contact-item"><i class="fas fa-envelope"></i> abmtek@gmail.com</a>
+                <a href="mailto:abmtek@gmail.com" class="contact-item"><i class="fas fa-envelope"></i> abmteklimited@gmail.com</a>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Footer 
     <footer class="footer" id="contact">
         <div class="container footer-grid">
-            <div class="footer-col">
+            
                
-                <a href="tel:07003124444" class="footer-link">07003124444</a>
-                <br>
-                <a href="mailto:abmtek@gmail.com" class="footer-link">abmtek@gmail.com</a>
-            </div>
+                
             <div class="footer-col">
                 <p class="footer-text">12 Amaka Ndoma Egba Street Lokogoma Abuja</p>
                 <p class="footer-text">Mon to Fri: 07 AM - 5 PM<br>Sat: 07 AM - 01 PM</p>
@@ -259,7 +257,25 @@
                 
             </div>
         </div>
-    </footer>
+    </footer> -->
+
+    <!-- Booking Modal -->
+    <div class="booking-modal" id="bookingModal" aria-hidden="true">
+        <div class="booking-backdrop" id="bookingBackdrop"></div>
+        <div class="booking-dialog" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
+            <div class="booking-header">
+                <h3 id="bookingTitle">Book Appointment</h3>
+                <button class="booking-close" id="bookingClose" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="booking-content" id="bookingContent"></div>
+            <div class="booking-footer">
+                <button class="button button--ghost" id="prevStep">Back</button>
+                <button class="button" id="nextStep">Next</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Mobile Navigation Toggle
@@ -295,6 +311,458 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && navOverlay.classList.contains('active')) {
                 closeNav();
+            }
+        });
+
+        // Booking Modal & Flow
+        const bookingModal = document.getElementById('bookingModal');
+        const bookingBackdrop = document.getElementById('bookingBackdrop');
+        const bookingClose = document.getElementById('bookingClose');
+        const bookingContent = document.getElementById('bookingContent');
+        const bookingStepper = null;
+        const openBookingBtn = document.getElementById('bookAppointmentBtn');
+        const prevStepBtn = document.getElementById('prevStep');
+        const nextStepBtn = document.getElementById('nextStep');
+
+        const bookingState = {
+            step: 1,
+            selectedServiceKeys: new Set(),
+            selectedSuggestionKeys: new Set(),
+            description: '',
+            imageFile: null,
+            date: '',
+            contact: { name: '', phone: '' }
+        };
+
+        const servicesData = [
+            {
+                key: 'mb_a_b',
+                title: 'Mercedes-Benz A & B Services',
+                description: 'Factory-specified maintenance including oil/filter, fluids, and inspection. B Service adds additional items to keep performance at its best.' ,
+                suggestions: [
+                    { key: 'a_service', title: 'Mercedes-Benz A Service', details: 'Oil & Filter Change - Dust Filter Replacement - Top Off All Fluids - Tire Rotation - Service Reminder Reset - Comprehensive Vehicle Inspection' },
+                    { key: 'b_service', title: 'Mercedes-Benz B Service', details: 'Oil & Filter Change - Brake Fluid Flush - Dust Filter Replacement (If Applicable) - Cabin Filter Replacement - Top Off All Fluids - Tire Rotation - Service Reminder Reset - Comprehensive Vehicle Inspection' },
+                    { key: 'b_service_wipers', title: 'Mercedes-Benz B Service With Wipers', details: 'Oil & Filter Change - Brake Fluid Flush - Dust Filter Replacement (If Applicable) - Cabin Filter Replacement (If Applicable) - Windshield Wiper Blades Replacement - Rear Wiper Blade Replacement (If Applicable) - Top Off All Fluids - Tire Rotation - Service Reminder Reset - Comprehensive Vehicle Inspection' }
+                ]
+            },
+            {
+                key: 'pre_post_inspection',
+                title: 'Pre-Purchase Inspection | Post-Purchase Inspection',
+                description: 'A thorough inspection before or after buying including scanning the vehicle for codes to uncover issues, guide your decision, identify repairs, and plan maintenance.',
+                suggestions: []
+            },
+            {
+                key: 'oil_change',
+                title: 'Mercedes Oil & Filter Change',
+                description: 'Oil & Filter Change - Top Off All Fluids - Service Reminder Reset - Comprehensive Vehicle Inspection',
+                suggestions: [
+                    { key: 'full_oil_change', title: 'Full Oil Change Service', details: '' },
+                    { key: 'different_oil_change', title: 'I need a different oil change service', details: '' }
+                ]
+            },
+            {
+                key: 'diagnostics',
+                title: 'Diagnostics',
+                description: 'Diagnose | Leaks | Noises | Drivability | Vibrations | Battery | Malfunction Lights',
+                suggestions: [
+                    { key: 'cel', title: 'Check Engine Light Diagnosis', details: 'Advanced equipment scan, read/interpret fault codes, pinpoint issues behind warning lights/performance problems.' },
+                    { key: 'oil_leak', title: 'Oil Leak Diagnosis', details: 'Inspect to trace source of oil leaks, identify failing seals/components, recommend repairs.' },
+                    { key: 'noise', title: 'Noise Diagnostic', details: 'Inspect and test to locate unusual sounds, identify cause, recommend repairs.' },
+                    { key: 'coolant_leak', title: 'Coolant Leak Diagnostic', details: 'Inspect and pressure-test cooling system to locate leaks and prevent overheating.' },
+                    { key: 'no_start', title: 'Vehicle No Start Diagnosis', details: 'Test battery, starter, alternator, fuel, and ignition systems to pinpoint issue.' },
+                    { key: 'air_susp', title: 'Air Suspension Diagnostic', details: 'Detect leaks, sensor or compressor issues, and other faults; recommend repairs.' },
+                    { key: 'abs_tc', title: 'ABS / Traction Control Diagnosis', details: 'Scan/test ABS and traction systems; identify fault codes, sensor/module issues.' },
+                    { key: 'battery_draw', title: 'Battery Draw Diagnostic', details: 'Detect parasitic draws that drain the battery and pinpoint the source.' },
+                    { key: 'engine_health', title: 'Engine Health Report | M157 / M278 | Includes Spark Plugs', details: 'Comprehensive scan, electronic compression test, and borescope inspection for engine condition.' }
+                ]
+            },
+            {
+                key: 'tires_alignment',
+                title: 'Tires | Alignment',
+                description: 'Replacements | Rotations | Alignments | Leak Repairs | TPMS Light Diagnostics',
+                suggestions: [
+                    { key: 'mb_4w_align', title: 'Mercedes-Benz 4 Wheel Alignment', details: 'Ride height measurement, rear/front toe & camber check/adjust, EPS rack reset.' },
+                    { key: 'roadforce', title: 'Tire RoadForce Balancing', details: 'Hunter RoadForce balancer to eliminate vibrations and maximize comfort.' },
+                    { key: 'tire_replace', title: 'Tire Replacement', details: 'Professional removal and installation with scratch-free mounting equipment.' },
+                    { key: 'tpms', title: 'TPMS or Tire Warning Indicator is On', details: '' },
+                    { key: 'tire_rotation', title: 'Tire Rotation', details: '' },
+                    { key: 'tire_leak', title: 'Tire Leak Repair', details: '' },
+                    { key: 'tire_inspect', title: 'Tire Inspection', details: '' }
+                ]
+            },
+            {
+                key: 'brakes',
+                title: 'Brakes',
+                description: 'Issues, pads, rotors, inspection',
+                suggestions: [
+                    { key: 'brake_pulsate', title: 'I feel pulsating when I press the brake pedal', details: '' },
+                    { key: 'brake_grinding', title: 'I feel or hear grinding from my brakes', details: '' },
+                    { key: 'brake_sense', title: 'I see/hear/smell something with my brakes', details: '' },
+                    { key: 'brake_told', title: 'Another person/company told me I need brake service', details: '' },
+                    { key: 'brake_other', title: "I will describe something else...", details: '' }
+                ],
+                extra: {
+                    followUp: [ 'Front brakes', 'Rear brakes', 'Both front and rear brakes', 'I am unsure if it\'s the front or rear brakes...' ]
+                }
+            },
+            {
+                key: 'battery',
+                title: 'Battery',
+                description: 'Battery replacement, testing, starter',
+                suggestions: [
+                    { key: 'battery_ok', title: 'My car starts', details: '' },
+                    { key: 'battery_slow', title: 'My car turns over slowly but does start', details: '' },
+                    { key: 'battery_jump', title: 'My car requires a jump-start to start', details: '' },
+                    { key: 'battery_dies', title: 'My car battery dies while driving', details: 'Usually indicates a charging system issue' },
+                    { key: 'battery_other', title: 'I need something else with my battery...', details: '' },
+                    { key: 'no_start', title: 'My car does not start', details: '' },
+                    { key: 'key_nothing', title: 'I turn the key and nothing happens', details: '' },
+                    { key: 'turns_no_start', title: 'The engine turns over but does not start', details: '' },
+                    { key: 'clicking', title: 'The engine makes a clicking sound', details: '' },
+                    { key: 'charging_issue', title: 'Charging system problem', details: 'Usually indicates a problem with your car\'s charging system' }
+                ]
+            },
+            {
+                key: 'hvac',
+                title: 'Heat or A/C',
+                description: 'No heat, no AC, intermittent issues',
+                suggestions: [
+                    { key: 'heat_not_working', title: "My heat isn't working properly", details: '' },
+                    { key: 'ac_not_working', title: "My A/C isn't working properly", details: '' },
+                    { key: 'neither', title: 'Neither heat or A/C is working properly', details: '' },
+                    { key: 'hvac_other', title: "It's something else related to my heat or A/C...", details: '' }
+                ]
+            }
+        ];
+
+        function openBooking() {
+            bookingModal.classList.add('active');
+            body.style.overflow = 'hidden';
+            renderStep();
+        }
+
+        function closeBooking() {
+            bookingModal.classList.remove('active');
+            body.style.overflow = '';
+        }
+
+        function setStepperActive() {}
+
+        function renderServices() {
+            const selected = bookingState.selectedServiceKeys;
+            return `
+                <div class="section-subtitle">Select one or more services</div>
+                <div class="services-grid">
+                    ${servicesData.map((s, idx) => `
+                        <label class="service-card ${selected.has(s.key) ? 'selected' : ''}">
+                            <input class="service-checkbox" type="checkbox" value="${s.key}" ${selected.has(s.key) ? 'checked' : ''} />
+                            <div class="service-card-eyebrow">SERVICES V${idx + 1}</div>
+                            <div class="service-card-title">${s.title}</div>
+                            <div class="service-card-desc">${s.description}</div>
+                        </label>
+                    `).join('')}
+                    <button type="button" class="describe-card" id="goDescribeFromServices">
+                        <div class="service-card-eyebrow">OPTION</div>
+                        <div class="service-card-title">Describe your issue</div>
+                        <div class="service-card-desc">Prefer to skip selecting services? Describe the problem and continue.</div>
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderSuggestions() {
+            const selectedServiceList = servicesData.filter(s => bookingState.selectedServiceKeys.has(s.key));
+            return `
+                <div class="section-subtitle">Select at least one suggestion per your needs (or continue to describe)</div>
+                <button type="button" class="describe-card" id="goDescribeFromSuggestions">
+                    <div class="service-card-eyebrow">OPTION</div>
+                    <div class="service-card-title">I want to describe the issue</div>
+                    <div class="service-card-desc">Skip suggestions and tell us what you're experiencing.</div>
+                </button>
+                ${selectedServiceList.map(s => `
+                    <div class="suggestion-group">
+                        <div class="suggestion-group-eyebrow">Suggestions</div>
+                        <div class="suggestion-group-title">${s.title}</div>
+                        <div class="suggestions-list">
+                            ${s.suggestions.map(sug => {
+                                const key = s.key + '__' + sug.key;
+                                const isSelected = bookingState.selectedSuggestionKeys.has(key);
+                                return `
+                                    <label class="suggestion-item ${isSelected ? 'selected' : ''}">
+                                        <input class="suggestion-checkbox" type="checkbox" value="${key}" ${isSelected ? 'checked' : ''} />
+                                        <div class="suggestion-title">${sug.title}</div>
+                                        ${sug.details ? `<div class=\"suggestion-details\">${sug.details}</div>` : ''}
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        ${s.key === 'brakes' ? `
+                            <div class="followup">
+                                <div class="followup-title">Selection should lead to:</div>
+                                <div class="followup-options">
+                                    ${s.extra.followUp.map(opt => {
+                                        const key = 'brakes_follow__' + opt;
+                                        const chosen = bookingState.selectedSuggestionKeys.has(key);
+                                        return `
+                                            <label class="badge ${chosen ? 'selected' : ''}">
+                                                <input type="checkbox" value="${key}" ${chosen ? 'checked' : ''} />
+                                                <span>${opt}</span>
+                                            </label>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function renderDescribe() {
+            return `
+                <div class="field">
+                    <label class="label">Describe the issue (optional if suggestions selected)</label>
+                    <textarea id="issueDesc" rows="5" placeholder="Tell us more about your issue...">${bookingState.description || ''}</textarea>
+                </div>
+                <div class="field">
+                    <label class="label">Add an image (optional)</label>
+                    <input type="file" id="issueImage" accept="image/*" />
+                </div>
+            `;
+        }
+
+        function renderDate() {
+            return `
+                <div class="field">
+                    <label class="label">Preferred date</label>
+                    <div class="date-row">
+                        <i class="fas fa-calendar-alt date-icon" aria-hidden="true"></i>
+                        <input type="date" id="apptDate" value="${bookingState.date || ''}" />
+                        <div class="date-display" id="dateDisplay"></div>
+                    </div>
+                </div>
+                ${bookingState.selectedServiceKeys.has('pre_post_inspection') ? `
+                <div class="field">
+                    <div class="label">About this inspection</div>
+                    <div class="help-text">A thorough inspection before or after buying including scanning the vehicle for codes to uncover issues, guide your decision, identify repairs, and plan maintenance.</div>
+                </div>` : ''}
+            `;
+        }
+
+        function renderContact() {
+            return `
+                <div class="field">
+                    <label class="label">Name</label>
+                    <input type="text" id="contactName" placeholder="Your full name" value="${bookingState.contact.name || ''}" />
+                </div>
+                <div class="field">
+                    <label class="label">Phone Number</label>
+                    <input type="tel" id="contactPhone" placeholder="e.g. 0700 000 0000" value="${bookingState.contact.phone || ''}" />
+                </div>
+            `;
+        }
+
+        function renderStep() {
+            setStepperActive();
+            let html = '';
+            switch (bookingState.step) {
+                case 1: html = renderServices(); break;
+                case 2: html = renderSuggestions(); break;
+                case 3: html = renderDescribe(); break;
+                case 4: html = renderDate(); break;
+                case 5: html = renderContact(); break;
+            }
+            bookingContent.innerHTML = html;
+
+            // toggle button labels
+            prevStepBtn.style.display = bookingState.step === 1 ? 'none' : 'inline-block';
+            nextStepBtn.textContent = bookingState.step === 5 ? 'Submit' : 'Next';
+
+            // attach listeners for dynamic elements
+            if (bookingState.step === 1) {
+                bookingContent.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.addEventListener('change', (e) => {
+                        const key = e.target.value;
+                        if (e.target.checked) bookingState.selectedServiceKeys.add(key); else bookingState.selectedServiceKeys.delete(key);
+                        renderStep();
+                    });
+                });
+                const goDesc = document.getElementById('goDescribeFromServices');
+                if (goDesc) goDesc.addEventListener('click', () => { bookingState.step = 3; renderStep(); });
+            }
+            if (bookingState.step  == 2) {
+                bookingContent.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.addEventListener('change', (e) => {
+                        const key = e.target.value;
+                        if (e.target.checked) bookingState.selectedSuggestionKeys.add(key); else bookingState.selectedSuggestionKeys.delete(key);
+                        // no re-render to avoid scroll jump; just toggle class
+                        const label = e.target.closest('label');
+                        if (label) label.classList.toggle('selected', e.target.checked);
+                    });
+                });
+                const goDesc2 = document.getElementById('goDescribeFromSuggestions');
+                if (goDesc2) goDesc2.addEventListener('click', () => { bookingState.step = 3; renderStep(); });
+            }
+            if (bookingState.step === 3) {
+                const desc = document.getElementById('issueDesc');
+                const img = document.getElementById('issueImage');
+                if (desc) desc.addEventListener('input', (e) => bookingState.description = e.target.value);
+                if (img) img.addEventListener('change', (e) => bookingState.imageFile = e.target.files && e.target.files[0] ? e.target.files[0] : null);
+            }
+            if (bookingState.step === 4) {
+                const date = document.getElementById('apptDate');
+                const dateDisplay = document.getElementById('dateDisplay');
+                const dateIcon = document.querySelector('.date-icon');
+                
+                if (date) {
+                    date.addEventListener('change', (e) => { 
+                        bookingState.date = e.target.value; 
+                        if (dateDisplay) dateDisplay.textContent = e.target.value || 'No date selected'; 
+                    });
+                    // Make date input clickable
+                    date.addEventListener('click', (e) => e.target.showPicker?.());
+                }
+                
+                if (dateIcon) {
+                    dateIcon.addEventListener('click', () => {
+                        if (date) date.showPicker?.() || date.click();
+                    });
+                }
+                
+                if (dateDisplay) dateDisplay.textContent = bookingState.date || 'No date selected';
+            }
+            if (bookingState.step === 5) {
+                const name = document.getElementById('contactName');
+                const phone = document.getElementById('contactPhone');
+                if (name) name.addEventListener('input', (e) => bookingState.contact.name = e.target.value);
+                if (phone) phone.addEventListener('input', (e) => bookingState.contact.phone = e.target.value);
+            }
+        }
+
+        function validateStep() {
+            if (bookingState.step === 1) {
+                // allow proceeding if either a service is selected OR description provided
+                return bookingState.selectedServiceKeys.size > 0 || (bookingState.description && bookingState.description.trim().length > 0);
+            }
+            if (bookingState.step === 2) {
+                // suggestions optional if they will describe in next step; allow passing through
+                return true;
+            }
+            if (bookingState.step === 3) {
+                // ensure either a suggestion was selected or a description provided
+                return bookingState.selectedSuggestionKeys.size > 0 || (bookingState.description && bookingState.description.trim().length > 0);
+            }
+            if (bookingState.step === 4) {
+                return Boolean(bookingState.date);
+            }
+            if (bookingState.step === 5) {
+                return Boolean(bookingState.contact.name && bookingState.contact.phone);
+            }
+            return true;
+        }
+
+        function submitBooking() {
+            // Send to admin platform (simulate API call)
+            const payload = {
+                services: Array.from(bookingState.selectedServiceKeys),
+                suggestions: Array.from(bookingState.selectedSuggestionKeys),
+                description: bookingState.description,
+                date: bookingState.date,
+                contact: bookingState.contact,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Store in admin storage (separate from form state)
+            try {
+                const existing = JSON.parse(localStorage.getItem('abm_admin_bookings') || '[]');
+                existing.push(payload);
+                localStorage.setItem('abm_admin_bookings', JSON.stringify(existing));
+            } catch (e) {
+                console.error('Failed to save booking', e);
+            }
+            
+            // Reset form state to prevent pre-filling
+            bookingState.selectedServiceKeys.clear();
+            bookingState.selectedSuggestionKeys.clear();
+            bookingState.description = '';
+            bookingState.imageFile = null;
+            bookingState.date = '';
+            bookingState.contact = { name: '', phone: '' };
+            bookingState.step = 1;
+            
+            closeBooking();
+            showAlertModal('Thank you! Your request has been recorded. We will contact you shortly.');
+        }
+
+        // Lightweight alert modal (design-system matching)
+        function showAlertModal(message) {
+            let modal = document.getElementById('alertModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'alertModal';
+                modal.className = 'booking-modal active';
+                modal.innerHTML = `
+                    <div class="booking-backdrop" data-close="1"></div>
+                    <div class="booking-dialog" role="dialog" aria-modal="true" aria-labelledby="alertTitle">
+                        <div class="booking-header">
+                            <h3 id="alertTitle">Notice</h3>
+                            <button class="booking-close" data-close="1" aria-label="Close"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="booking-content" id="alertContent"></div>
+                        <div class="booking-footer">
+                            <span></span>
+                            <button class="button" data-close="1">OK</button>
+                        </div>
+                    </div>`;
+                document.body.appendChild(modal);
+                modal.addEventListener('click', (e) => {
+                    if (e.target.dataset.close) modal.remove();
+                });
+            }
+            const content = modal.querySelector('#alertContent');
+            if (content) content.textContent = message;
+            modal.classList.add('active');
+        }
+
+        openBookingBtn.addEventListener('click', openBooking);
+        bookingClose.addEventListener('click', closeBooking);
+        bookingBackdrop.addEventListener('click', closeBooking);
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && bookingModal.classList.contains('active')) {
+                closeBooking();
+            }
+        });
+
+        prevStepBtn.addEventListener('click', () => {
+            if (bookingState.step > 1) {
+                bookingState.step -= 1;
+                renderStep();
+            }
+        });
+        nextStepBtn.addEventListener('click', () => {
+            if (!validateStep()) {
+                // simple inline feedback
+                bookingContent.classList.add('shake');
+                setTimeout(() => bookingContent.classList.remove('shake'), 400);
+                return;
+            }
+            // Fast-path: Pre/Post Purchase Inspection goes straight to calendar
+            if (bookingState.step === 1 && bookingState.selectedServiceKeys.has('pre_post_inspection')) {
+                bookingState.step = 4; // Date step
+                renderStep();
+                return;
+            }
+            // If user has described the issue, jump directly to the date step
+            if ((bookingState.step === 1 || bookingState.step === 2 || bookingState.step === 3) && bookingState.description && bookingState.description.trim().length > 0) {
+                bookingState.step = 4;
+                renderStep();
+                return;
+            }
+            if (bookingState.step < 5) {
+                bookingState.step += 1;
+                renderStep();
+            } else {
+                submitBooking();
             }
         });
     </script>
