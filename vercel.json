@@ -9,6 +9,14 @@
       "destination": "https://abm-web-alpha.vercel.app/admin/"
     },
     {
+      "source": "/admin/:path",
+      "destination": "https://abm-web-alpha.vercel.app/admin/:path"
+    },
+    {
+      "source": "/admin/:path/",
+      "destination": "https://abm-web-alpha.vercel.app/admin/:path/"
+    },
+    {
       "source": "/admin/:path*",
       "destination": "https://abm-web-alpha.vercel.app/admin/:path*"
     }
