@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/admin",
-      "destination": "abm-web-alpha.vercel.app/admin/"
+      "destination": "https://abm-web-git-main-allentheanswers-projects-dcbaa0db.vercel.app/admin/"
     },
     {
       "source": "/admin/:path*",
-      "destination": "abm-web-alpha.vercel.app/admin/:path*"
+      "destination": "https://abm-web-git-main-allentheanswers-projects-dcbaa0db.vercel.app/admin/:path*"
     }
   ]
 }
