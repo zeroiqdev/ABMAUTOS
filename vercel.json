@@ -1,12 +1,12 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/admin",
-      "destination": "https://abm-web-alpha.vercel.app/admin/"
+      "src": "/admin/(.*)",
+      "dest": "https://abm-web-alpha.vercel.app/admin/$1"
     },
     {
-      "source": "/admin/:path*",
-      "destination": "https://abm-web-alpha.vercel.app/admin/:path*"
+      "src": "/admin",
+      "dest": "https://abm-web-alpha.vercel.app/admin/"
     }
   ]
 }
