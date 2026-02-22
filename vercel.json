@@ -1,12 +1,16 @@
 {
   "rewrites": [
     {
-      "source": "/admin/:path*",
-      "destination": "https://abm-web-allentheanswers.vercel.app/admin/:path*"
+      "source": "/admin",
+      "destination": "https://abm-web-alpha.vercel.app/admin/"
     },
     {
-      "source": "/admin",
-      "destination": "https://abm-web-allentheanswers.vercel.app/admin/"
+      "source": "/admin/",
+      "destination": "https://abm-web-alpha.vercel.app/admin/"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "https://abm-web-alpha.vercel.app/admin/:path*"
     }
   ]
 }
