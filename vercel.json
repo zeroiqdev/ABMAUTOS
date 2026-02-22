@@ -7,6 +7,10 @@
     {
       "source": "/admin/:match*",
       "destination": "https://abm-web-alpha.vercel.app/admin/:match*"
+    },
+    {
+      "source": "/((?!admin).*)",
+      "destination": "/$1"
     }
   ]
 }
