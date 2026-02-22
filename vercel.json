@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/admin",
+      "destination": "https://abm-web-git-main-allentheanswers-projects-dcbaa0db.vercel.app/admin/"
+    },
+    {
       "source": "/admin/:path*",
       "destination": "https://abm-web-git-main-allentheanswers-projects-dcbaa0db.vercel.app/admin/:path*"
     }
